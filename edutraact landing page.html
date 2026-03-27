@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduTrack — School Results & Academic Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --emerald: #0f7a5a;
+    --emerald-light: #14a87c;
+    --emerald-dark: #094d39;
+    --gold: #f5a623;
+    --gold-light: #ffc84a;
+    --cream: #faf8f4;
+    --ink: #0d1b14;
+    --ink-muted: #3d5246;
+    --white: #ffffff;
+    --surface: #f0f5f2;
+    --border: #d4e5dc;
+    --radius: 16px;
+    --shadow: 0 8px 40px rgba(15,122,90,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; max-width: 100vw; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 6%;
+    background: rgba(250,248,244,0.94); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--emerald-dark), var(--emerald-light));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 900; color: #fff; font-size: 18px;
+  }
+  .nav-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 22px; color: var(--ink); }
+  .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--ink-muted); font-size: 15px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--emerald); }
+  .nav-cta { display: flex; gap: 12px; align-items: center; }
+  .btn-outline {
+    padding: 9px 22px; border-radius: 50px; border: 1.5px solid var(--emerald);
+    color: var(--emerald); background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s; text-decoration: none;
+  }
+  .btn-outline:hover { background: var(--emerald); color: #fff; }
+  .btn-primary {
+    padding: 10px 24px; border-radius: 50px; border: none;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+    color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .25s; text-decoration: none; display: inline-block;
+    box-shadow: 0 4px 16px rgba(15,122,90,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,122,90,0.4); }
+
+  /* HERO */
+  .hero {
+    padding: 140px 6% 80px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center; min-height: 100vh;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -100px; right: -100px;
+    width: min(700px, 100vw); height: min(700px, 100vw); border-radius: 50%;
+    background: radial-gradient(circle, rgba(15,122,90,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    background: rgba(15,122,90,0.1); border: 1px solid rgba(15,122,90,0.2);
+    border-radius: 50px; padding: 6px 16px;
+    font-size: 13px; font-weight: 500; color: var(--emerald); margin-bottom: 24px; max-width: 100%;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald-light); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(30px, 6vw, 60px); font-weight: 900; line-height: 1.1; color: var(--ink); margin-bottom: 22px; }
+  .hero h1 .accent { color: var(--emerald); position: relative; }
+  .hero h1 .accent::after { content: ''; position: absolute; left: 0; bottom: -4px; right: 0; height: 3px; background: linear-gradient(90deg, var(--emerald), var(--gold)); border-radius: 2px; }
+  .hero p { font-size: 17px; line-height: 1.7; color: var(--ink-muted); max-width: 480px; margin-bottom: 36px; }
+  .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .btn-hero { padding: 15px 36px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--emerald-dark), var(--emerald-light)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .25s; box-shadow: 0 6px 28px rgba(15,122,90,0.35); }
+  .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(15,122,90,0.45); }
+  .btn-ghost { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 50px; border: 1.5px solid var(--border); background: #fff; color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all .2s; }
+  .btn-ghost:hover { border-color: var(--emerald); color: var(--emerald); }
+  .hero-stats { display: flex; gap: 32px; margin-top: 44px; }
+  .stat { display: flex; flex-direction: column; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--ink); }
+  .stat-label { font-size: 13px; color: var(--ink-muted); }
+
+  /* APP MOCKUP */
+  .hero-visual { position: relative; animation: fadeIn .8s ease both; animation-delay: .15s; }
+  .hero-left { animation: fadeIn .7s ease both; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .app-window { background: #fff; border-radius: 20px; box-shadow: 0 24px 80px rgba(15,122,90,0.16); border: 1px solid var(--border); overflow: hidden; max-width: 100%; }
+  .app-topbar { background: linear-gradient(135deg, var(--emerald-dark), var(--emerald)); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .app-topbar-left { display: flex; align-items: center; gap: 10px; }
+  .app-logo-sm { width: 30px; height: 30px; border-radius: 8px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 900; color: #fff; font-size: 14px; flex-shrink: 0; }
+  .app-school-name { color: #fff; font-size: 13px; font-weight: 600; }
+  .app-school-sub { color: rgba(255,255,255,0.65); font-size: 10px; }
+  .app-user-chip { background: rgba(255,255,255,0.15); border-radius: 50px; padding: 5px 12px; color: #fff; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .app-body { display: flex; height: 340px; overflow: hidden; }
+  .app-sidebar { width: 140px; background: var(--surface); border-right: 1px solid var(--border); padding: 14px 0; flex-shrink: 0; }
+  .sidebar-item { display: flex; align-items: center; gap: 8px; padding: 11px 14px; font-size: 12px; color: var(--ink-muted); cursor: pointer; transition: all .15s; font-weight: 500; }
+  .sidebar-item:hover { background: rgba(15,122,90,0.07); color: var(--emerald); }
+  .sidebar-item.active { background: rgba(15,122,90,0.1); color: var(--emerald); border-right: 2px solid var(--emerald); }
+  .sidebar-icon { font-size: 14px; }
+  .app-content { flex: 1; padding: 14px 16px; overflow: hidden; display: flex; flex-direction: column; }
+  .app-content-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 10px; flex-shrink: 0; }
+  .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; flex-shrink: 0; }
+  .score-tile { background: var(--surface); border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border); }
+  .score-tile .s-label { font-size: 10px; color: var(--ink-muted); font-weight: 500; margin-bottom: 4px; }
+  .score-tile .s-val { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
+  .score-tile .s-sub { font-size: 10px; color: var(--emerald); font-weight: 500; }
+  .dash-activity-label { font-size: 10px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; flex-shrink: 0; }
+  .dash-activity { display: flex; flex-direction: column; gap: 0; flex: 1; overflow: hidden; }
+  .dash-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(212,229,220,0.5); }
+  .dash-row:last-child { border-bottom: none; }
+  .dash-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dash-dot.g { background: var(--emerald-light); }
+  .dash-dot.o { background: var(--gold); }
+  .dash-dot.b { background: #4444aa; }
+  .dash-info { flex: 1; min-width: 0; }
+  .dash-name { font-size: 11px; font-weight: 600; color: var(--ink); }
+  .dash-meta { font-size: 10px; color: var(--ink-muted); margin-left: 4px; }
+  .dash-grade { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .dash-grade.ga { background: rgba(15,122,90,0.1); color: var(--emerald); }
+  .dash-grade.gb { background: rgba(245,166,35,0.15); color: #b07900; }
+  .dash-grade.gc { background: rgba(100,100,220,0.1); color: #4444aa; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .mini-table th { text-align: left; padding: 5px 8px; color: var(--ink-muted); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+  .mini-table td { padding: 6px 8px; border-bottom: 1px solid rgba(212,229,220,0.5); color: var(--ink); }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .grade-badge { display: inline-block; padding: 2px 8px; border-radius: 50px; font-size: 10px; font-weight: 700; }
+  .grade-a { background: rgba(15,122,90,0.1); color: var(--emerald); }
+  .grade-b { background: rgba(245,166,35,0.15); color: #b07900; }
+  .grade-c { background: rgba(100,100,220,0.1); color: #4444aa; }
+
+  .float-badge { position: absolute; background: #fff; border-radius: 12px; padding: 10px 14px; box-shadow: 0 10px 32px rgba(15,122,90,0.18); border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; animation: floatY 3s ease-in-out infinite alternate; z-index: 2; }
+  @keyframes floatY { from{transform:translateY(0)} to{transform:translateY(-8px)} }
+  .float-badge.top-right { top: -14px; right: -14px; animation-delay: .3s; }
+  .float-badge.bottom-left { bottom: 20px; left: -14px; animation-delay: .9s; }
+  .fb-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .fb-icon.g { background: rgba(15,122,90,0.1); }
+  .fb-icon.o { background: rgba(245,166,35,0.15); }
+  .fb-title { font-size: 12px; font-weight: 600; color: var(--ink); }
+  .fb-sub { font-size: 10px; color: var(--ink-muted); }
+
+  /* SECTIONS */
+  .section { padding: 96px 6%; }
+  .section-label { font-size: 13px; font-weight: 600; color: var(--emerald); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(24px, 3.5vw, 46px); font-weight: 900; color: var(--ink); line-height: 1.15; margin-bottom: 16px; }
+  .section-sub { font-size: 17px; color: var(--ink-muted); line-height: 1.7; max-width: 520px; }
+
+  /* FEATURES */
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 52px; }
+  .feature-card { background: #fff; border-radius: var(--radius); padding: 30px 26px; border: 1px solid var(--border); transition: all .25s; position: relative; overflow: hidden; }
+  .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--emerald), var(--gold)); opacity: 0; transition: opacity .25s; }
+  .feature-card:hover { box-shadow: var(--shadow); transform: translateY(-4px); border-color: rgba(15,122,90,0.2); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon { width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, rgba(15,122,90,0.1), rgba(20,168,124,0.15)); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px; }
+  .feature-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--ink); margin-bottom: 9px; }
+  .feature-desc { font-size: 14px; color: var(--ink-muted); line-height: 1.7; }
+
+  /* ROLES */
+  .roles-section { padding: 80px 6%; background: var(--surface); }
+  .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 52px; }
+  .role-card { background: #fff; border-radius: 20px; padding: 36px 28px; border: 1.5px solid var(--border); text-align: center; transition: all .25s; }
+  .role-card:hover { box-shadow: var(--shadow); transform: translateY(-4px); border-color: rgba(15,122,90,0.25); }
+  .role-emoji { font-size: 40px; margin-bottom: 16px; }
+  .role-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+  .role-desc { font-size: 14px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 20px; }
+  .role-perks { list-style: none; text-align: left; }
+  .role-perks li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--ink-muted); padding: 5px 0; }
+  .role-perks li::before { content: '✓'; color: var(--emerald); font-weight: 700; flex-shrink: 0; }
+
+  /* HOW IT WORKS */
+  .how-section { padding: 96px 6%; background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%); position: relative; overflow: hidden; }
+  .how-section::after { content: ''; position: absolute; bottom: -100px; right: -100px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none; }
+  .how-section .section-label { color: var(--gold-light); }
+  .how-section .section-title { color: #fff; }
+  .how-section .section-sub { color: rgba(255,255,255,0.7); }
+  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 56px; position: relative; }
+  .steps-grid::before { content: ''; position: absolute; top: 27px; left: 80px; right: 80px; height: 2px; background: rgba(255,255,255,0.15); z-index: 0; }
+  .step-item { text-align: center; position: relative; z-index: 1; }
+  .step-num { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: #fff; margin: 0 auto 18px; }
+  .step-title { font-weight: 600; font-size: 15px; color: #fff; margin-bottom: 8px; }
+  .step-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+
+  /* SHOWCASE */
+  .showcase-section { padding: 96px 6%; }
+  .showcase-row { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .showcase-row + .showcase-row { margin-top: 80px; }
+  .showcase-row.flip { direction: rtl; }
+  .showcase-row.flip > * { direction: ltr; }
+
+  .score-mockup { background: #fff; border-radius: 18px; box-shadow: 0 16px 60px rgba(15,122,90,0.12); border: 1px solid var(--border); overflow: hidden; }
+  .score-header { background: var(--surface); padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .score-header-title { font-weight: 700; font-size: 13px; color: var(--ink); }
+  .score-header-meta { font-size: 11px; color: var(--ink-muted); }
+  .score-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .score-table th { padding: 8px 10px; background: rgba(15,122,90,0.05); color: var(--emerald); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border); text-align: center; }
+  .score-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid rgba(212,229,220,0.4); color: var(--ink); }
+  .score-table tr:last-child td { border-bottom: none; }
+  .score-table .name-col { text-align: left; font-weight: 500; }
+  .score-input { width: 34px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px; text-align: center; font-size: 12px; color: var(--ink); }
+
+  .showcase-text .section-label { margin-bottom: 10px; }
+  .showcase-text h3 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 900; color: var(--ink); margin-bottom: 14px; line-height: 1.2; }
+  .showcase-text p { font-size: 15px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 20px; }
+  .showcase-bullets { list-style: none; }
+  .showcase-bullets li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--ink-muted); padding: 6px 0; }
+  .showcase-bullets li .bcheck { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; background: rgba(15,122,90,0.1); color: var(--emerald); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+
+  /* REPORT MOCKUP */
+  .report-mockup { background: #fff; border-radius: 18px; box-shadow: 0 16px 60px rgba(15,122,90,0.12); border: 1px solid var(--border); overflow: hidden; }
+  .report-top { background: linear-gradient(135deg, var(--emerald-dark), var(--emerald)); padding: 18px 20px; text-align: center; }
+  .report-school { color: #fff; font-weight: 700; font-size: 14px; }
+  .report-sub-text { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px; }
+  .report-card-title { color: var(--gold-light); font-size: 12px; font-weight: 600; margin-top: 8px; letter-spacing: .06em; }
+  .report-body { padding: 16px 18px; }
+  .report-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .ri-label { font-size: 10px; color: var(--ink-muted); font-weight: 500; }
+  .ri-val { font-size: 12px; color: var(--ink); font-weight: 600; }
+  .report-subjects { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .report-subjects th { padding: 5px 8px; background: var(--surface); color: var(--ink-muted); font-weight: 600; font-size: 10px; text-align: center; border-bottom: 1px solid var(--border); }
+  .report-subjects td { padding: 5px 8px; text-align: center; border-bottom: 1px solid rgba(212,229,220,0.4); }
+  .report-subjects .subj-name { text-align: left; color: var(--ink); font-weight: 500; }
+  .report-total-row { background: rgba(15,122,90,0.05); font-weight: 700; }
+
+  /* PRICING */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; align-items: start; }
+  .pricing-card { background: #fff; border-radius: 20px; padding: 36px 28px; border: 1.5px solid var(--border); transition: all .25s; }
+  .pricing-card.featured { background: linear-gradient(160deg, var(--emerald-dark), var(--emerald)); border-color: transparent; transform: scale(1.04); box-shadow: 0 20px 60px rgba(15,122,90,0.35); }
+  .pricing-card:hover { transform: translateY(-4px); }
+  .pricing-card.featured:hover { transform: scale(1.04) translateY(-4px); }
+  .plan-name { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--emerald); margin-bottom: 8px; }
+  .pricing-card.featured .plan-name { color: rgba(255,255,255,0.7); }
+  .plan-price { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; color: var(--ink); margin-bottom: 4px; display: flex; align-items: baseline; gap: 4px; }
+  .pricing-card.featured .plan-price { color: #fff; }
+  .plan-price .currency { font-size: 22px; font-weight: 700; }
+  .plan-price .period { font-size: 14px; font-weight: 400; color: var(--ink-muted); font-family: 'DM Sans', sans-serif; }
+  .pricing-card.featured .plan-price .period { color: rgba(255,255,255,0.6); }
+  .plan-desc { font-size: 14px; color: var(--ink-muted); margin-bottom: 26px; }
+  .pricing-card.featured .plan-desc { color: rgba(255,255,255,0.65); }
+  .plan-features { list-style: none; margin-bottom: 30px; }
+  .plan-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--ink-muted); padding: 6px 0; }
+  .pricing-card.featured .plan-features li { color: rgba(255,255,255,0.85); }
+  .check { width: 18px; height: 18px; border-radius: 50%; background: rgba(15,122,90,0.1); color: var(--emerald); display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 1px; }
+  .pricing-card.featured .check { background: rgba(255,255,255,0.2); color: #fff; }
+  .btn-plan { width: 100%; padding: 13px; border-radius: 50px; border: 1.5px solid var(--emerald); color: var(--emerald); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .btn-plan:hover { background: var(--emerald); color: #fff; }
+  .btn-plan.white { background: #fff; color: var(--emerald); border-color: #fff; }
+  .btn-plan.white:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+
+  /* CTA */
+  .cta-section { padding: 100px 6%; text-align: center; position: relative; overflow: hidden; }
+  .cta-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(15,122,90,0.07) 0%, transparent 70%); pointer-events: none; }
+  .cta-section .section-title { max-width: 600px; margin: 0 auto 16px; }
+  .cta-section .section-sub { max-width: 460px; margin: 0 auto 40px; }
+  .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-cta-primary { padding: 17px 44px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--emerald-dark), var(--emerald-light)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .25s; box-shadow: 0 8px 32px rgba(15,122,90,0.35); }
+  .btn-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 44px rgba(15,122,90,0.45); }
+  .btn-cta-outline { padding: 16px 40px; border-radius: 50px; border: 1.5px solid var(--border); background: #fff; color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; transition: all .2s; }
+  .btn-cta-outline:hover { border-color: var(--emerald); color: var(--emerald); }
+
+  /* FOOTER */
+  footer { background: var(--ink); padding: 64px 6% 40px; color: rgba(255,255,255,0.6); }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 52px; }
+  .footer-brand .logo-mark { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--emerald), var(--emerald-light)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 14px; flex-shrink: 0; }
+  .footer-brand p { font-size: 14px; line-height: 1.7; max-width: 260px; }
+  .footer-brand .secured { margin-top: 16px; font-size: 12px; color: var(--emerald-light); display: flex; align-items: center; gap: 6px; }
+  .footer-col h4 { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 18px; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 11px; }
+  .footer-col ul li a { text-decoration: none; color: rgba(255,255,255,0.55); font-size: 14px; transition: color .2s; }
+  .footer-col ul li a:hover { color: var(--emerald-light); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 26px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+  .footer-bottom a { color: var(--emerald-light); text-decoration: none; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .hero, .showcase-row { grid-template-columns: 1fr; gap: 40px; }
+    .hero-visual { order: -1; }
+    .showcase-row.flip { direction: ltr; }
+    .features-grid, .roles-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps-grid::before { display: none; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 460px; margin-left: auto; margin-right: auto; }
+    .pricing-card.featured { transform: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    /* Nav */
+    .nav-links, .nav-cta { display: none; }
+    .nav-mobile-btn { display: block; }
+    nav { padding: 14px 4%; }
+
+    /* Hero — single column, fully contained */
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 90px 4% 52px;
+      gap: 32px;
+      min-height: auto;
+      overflow: hidden;
+    }
+    .hero-visual { order: -1; overflow: hidden; width: 100%; }
+    .float-badge { display: none; }
+    .hero h1 { font-size: clamp(26px, 7.5vw, 42px); }
+    .hero p { font-size: 15px; max-width: 100%; margin-bottom: 24px; }
+    .hero-stats { flex-wrap: wrap; gap: 16px; margin-top: 28px; }
+    .hero-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+    .btn-hero, .btn-ghost { width: 100%; justify-content: center; text-align: center; }
+
+    /* App mockup — fully contained, no overflow */
+    .app-window { border-radius: 14px; }
+    .app-topbar { padding: 10px 14px; }
+    .app-school-sub { display: none; }
+    .app-body { height: 280px; }
+    .app-sidebar { width: 90px; }
+    .sidebar-item { padding: 7px 8px; font-size: 10px; gap: 5px; }
+    .sidebar-icon { font-size: 12px; }
+    .app-content { padding: 10px 10px; }
+    .app-content-title { font-size: 11px; margin-bottom: 7px; }
+    .score-grid { grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .score-tile { padding: 7px 8px; }
+    .score-tile .s-val { font-size: 16px; }
+    .dash-name { font-size: 10px; }
+    .dash-meta { font-size: 9px; }
+
+    /* Sections */
+    .section, .showcase-section, .faq-section { padding: 56px 4%; }
+    .roles-section { padding: 56px 4%; }
+    .how-section { padding: 56px 4%; }
+    .section-title { font-size: clamp(22px, 7vw, 34px); }
+    .section-sub { font-size: 15px; }
+
+    /* Grids */
+    .features-grid, .roles-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .showcase-row { grid-template-columns: 1fr; gap: 28px; direction: ltr; }
+    .showcase-row.flip { direction: ltr; }
+
+    /* Score/report tables — scrollable */
+    .score-mockup, .report-mockup { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .score-table, .report-subjects { min-width: 480px; font-size: 11px; }
+
+    /* Pricing */
+    .pricing-grid { grid-template-columns: 1fr; max-width: 100%; }
+    .pricing-card.featured { transform: none; }
+
+    /* CTA */
+    .cta-section { padding: 56px 4%; }
+    .cta-btns { flex-direction: column; align-items: center; gap: 12px; }
+    .btn-cta-primary, .btn-cta-outline { width: 100%; max-width: 320px; }
+
+    /* Footer */
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+
+    /* Pricing includes bar */
+    .pricing-includes-bar { padding: 0 4% 56px !important; }
+
+    /* WhatsApp FAB */
+    .wa-fab-wrap { bottom: 20px; left: 16px; }
+    .wa-option { font-size: 12px; padding: 8px 12px 8px 8px; }
+  }
+
+  /* MOBILE NAV */
+  .nav-mobile-btn{display:none;background:none;border:1.5px solid var(--border);color:var(--ink);padding:7px 13px;border-radius:50px;font-size:18px;cursor:pointer;margin-left:8px;}
+  .mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(13,27,20,0.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
+  .mob-nav-overlay.open{display:flex;}
+  .mob-nav-overlay a{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;text-decoration:none;transition:color .2s;}
+  .mob-nav-overlay a:hover{color:var(--emerald-light);}
+  .mob-nav-close{position:absolute;top:22px;right:24px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:28px;cursor:pointer;line-height:1;}
+  .mob-nav-cta{margin-top:10px;display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;padding:0 40px;}
+
+  /* PRICING INCLUDES BAR */
+  .pricing-includes-bar{margin-top:52px;text-align:center;}
+  .pricing-includes-bar h4{font-size:14px;font-weight:600;color:var(--ink-muted);margin-bottom:18px;}
+  .includes-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+  .inc-chip{background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:6px 16px;font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px;}
+  .inc-chip::before{content:'✓';color:var(--emerald);font-weight:700;}
+
+  /* FAQ */
+  .faq-section{padding:96px 6%;background:var(--surface);}
+  .faq-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:52px;max-width:780px;}
+  .faq-item{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:box-shadow .2s;}
+  .faq-item:hover{box-shadow:var(--shadow);}
+  .faq-q{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;font-weight:600;font-size:15px;color:var(--ink);user-select:none;line-height:1.5;}
+  .faq-q-text{flex:1;}
+  .faq-icon{width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(15,122,90,0.1);color:var(--emerald);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:transform .3s,background .2s;font-weight:700;line-height:1;margin-top:2px;}
+  .faq-item.open .faq-icon{transform:rotate(45deg);background:var(--emerald);color:#fff;}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+  .faq-item.open .faq-a{max-height:400px;}
+  .faq-a-inner{padding:0 22px 20px;font-size:14px;color:var(--ink-muted);line-height:1.75;border-top:1px solid var(--border);padding-top:14px;}
+
+  /* WHATSAPP FAB */
+  .wa-fab-wrap{position:fixed;bottom:28px;left:28px;z-index:999;display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+  .wa-fab{width:58px;height:58px;border-radius:50%;background:#25d366;border:none;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 28px rgba(37,211,102,0.45);cursor:pointer;animation:waBounce 2.5s ease-in-out infinite;transition:transform .2s,box-shadow .2s;}
+  @keyframes waBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}60%{transform:translateY(-4px)}}
+  .wa-fab:hover{animation:none;transform:scale(1.1);box-shadow:0 12px 36px rgba(37,211,102,0.55);}
+  .wa-options{display:none;flex-direction:column;gap:8px;margin-bottom:4px;}
+  .wa-options.open{display:flex;}
+  .wa-option{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:50px;padding:9px 16px 9px 10px;font-size:13px;font-weight:500;color:var(--ink);text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);transition:all .2s;white-space:nowrap;animation:slideUp .2s ease both;}
+  .wa-option:hover{background:var(--surface);border-color:#25d366;color:var(--emerald-dark);}
+  @keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .wa-option:nth-child(1){animation-delay:.0s}.wa-option:nth-child(2){animation-delay:.05s}.wa-option:nth-child(3){animation-delay:.1s}
+  .wa-opt-icon{width:30px;height:30px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+
+  /* AUTHOR BADGE */
+  .author-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(15,122,90,0.07);border:1px solid rgba(15,122,90,0.15);border-radius:50px;padding:6px 14px;font-size:12px;color:var(--ink-muted);text-decoration:none;transition:all .2s;}
+  .author-badge:hover{background:rgba(15,122,90,0.13);color:var(--emerald);border-color:rgba(15,122,90,0.3);}
+  .author-badge strong{color:var(--emerald);}
+
+  @media(max-width:768px){
+    .nav-mobile-btn{display:block;}
+  }
+
+  /* LUCIDE ICONS */
+  .lucide-icon { display: inline-block; vertical-align: middle; }
+  .sidebar-icon svg { width: 15px; height: 15px; stroke-width: 2; }
+  .feature-icon svg { width: 26px; height: 26px; stroke-width: 1.75; color: var(--emerald); }
+  .role-icon svg { width: 36px; height: 36px; stroke-width: 1.5; color: var(--emerald); }
+  .fb-icon svg { width: 16px; height: 16px; stroke-width: 2; color: var(--emerald); }
+  .fb-icon.o svg { color: var(--gold); }
+  .nav-mobile-btn svg { width: 20px; height: 20px; stroke-width: 2; }
+  .mob-nav-close svg { width: 22px; height: 22px; stroke-width: 2; }
+  .btn-ghost svg { width: 15px; height: 15px; stroke-width: 2; }
+  .app-user-chip svg { width: 13px; height: 13px; stroke-width: 2; }
+  .secured svg { width: 14px; height: 14px; stroke-width: 2; color: var(--emerald-light); }
+  .wa-fab svg { width: 28px; height: 28px; stroke-width: 2; color: #fff; }
+  .wa-opt-icon svg { width: 16px; height: 16px; stroke-width: 2; color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- MOBILE NAV OVERLAY -->
+<div class="mob-nav-overlay" id="mobNav">
+  <button class="mob-nav-close" onclick="closeMobNav()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <a href="#features" onclick="closeMobNav()">Features</a>
+  <a href="#roles" onclick="closeMobNav()">Who It&rsquo;s For</a>
+  <a href="#how" onclick="closeMobNav()">How It Works</a>
+  <a href="#pricing" onclick="closeMobNav()">Pricing</a>
+  <a href="#faq" onclick="closeMobNav()">FAQ</a>
+  <div class="mob-nav-cta">
+    <a class="btn-outline" href="https://rcsa-school-results.web.app/" target="_blank" style="text-align:center;display:block;">Log In</a>
+    <a class="btn-primary" href="https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20EduTrack%20for%20my%20school." target="_blank" onclick="closeMobNav()" style="text-align:center;display:block;">Get Started</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-mark">E</div>
+    <span>EduTrack</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#roles">Who It's For</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <button class="nav-mobile-btn" onclick="openMobNav()" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div class="nav-cta">
+    <a class="btn-outline" href="https://rcsa-school-results.web.app/" target="_blank">Log In</a>
+    <a class="btn-primary" href="https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20EduTrack%20for%20my%20school." target="_blank">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Built for Nigerian Schools · Secured by Firebase
+    </div>
+    <h1>Academic Records,<br><span class="accent">Handled</span> with Precision</h1>
+    <p>EduTrack is a complete school results and academic management platform — score entry, report cards, broadsheets, transcripts, and alumni records, all in one secure system.</p>
+    <div class="hero-actions">
+      <button class="btn-hero" onclick="window.open('https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20EduTrack%20for%20my%20school.')">Get Started Free</button>
+      <button class="btn-ghost" onclick="window.open('https://rcsa-school-results.web.app/')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> View Live App
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">12+</span>
+        <span class="stat-label">Class Levels</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">100%</span>
+        <span class="stat-label">Paperless Results</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">3</span>
+        <span class="stat-label">User Roles</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="float-badge top-right">
+      <div class="fb-icon g"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="M13 6h8"/><rect x="3" y="13" width="6" height="6" rx="1"/><path d="M13 14h8"/><path d="M13 18h8"/></svg></div>
+      <div>
+        <div class="fb-title">Broadsheet Ready</div>
+        <div class="fb-sub">SSS 3A · Term 2 · Just now</div>
+      </div>
+    </div>
+
+    <div class="app-window">
+      <div class="app-topbar">
+        <div class="app-topbar-left">
+          <div class="app-logo-sm">E</div>
+          <div>
+            <div class="app-school-name">EduTrack</div>
+            <div class="app-school-sub">Redeemed Christian School & Academy</div>
+          </div>
+        </div>
+        <div class="app-user-chip"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Admin</div>
+      </div>
+      <div class="app-body">
+        <div class="app-sidebar">
+          <div class="sidebar-item active"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span> Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Students</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span> Score Entry</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Report Cards</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg></span> Broadsheet</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg></span> Transcripts</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></span> Teachers</div>
+          <div class="sidebar-item"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/></svg></span> Alumni</div>
+        </div>
+        <div class="app-content">
+          <div class="app-content-title">Dashboard · 2024/2025 Session</div>
+          <div class="score-grid">
+            <div class="score-tile">
+              <div class="s-label">Total Students</div>
+              <div class="s-val">284</div>
+              <div class="s-sub">All classes</div>
+            </div>
+            <div class="score-tile">
+              <div class="s-label">Teachers</div>
+              <div class="s-val">18</div>
+              <div class="s-sub">Active staff</div>
+            </div>
+            <div class="score-tile">
+              <div class="s-label">Avg Score</div>
+              <div class="s-val">71.4</div>
+              <div class="s-sub">Term 2</div>
+            </div>
+          </div>
+          <div class="dash-activity-label">Recent Activity</div>
+          <div class="dash-activity">
+            <div class="dash-row">
+              <div class="dash-dot g"></div>
+              <div class="dash-info"><span class="dash-name">Chinyere O.</span> <span class="dash-meta">SSS 2A · Maths · <b>84</b></span></div>
+              <span class="dash-grade ga">A</span>
+            </div>
+            <div class="dash-row">
+              <div class="dash-dot o"></div>
+              <div class="dash-info"><span class="dash-name">Emeka N.</span> <span class="dash-meta">JSS 3A · English · <b>72</b></span></div>
+              <span class="dash-grade gb">B</span>
+            </div>
+            <div class="dash-row">
+              <div class="dash-dot b"></div>
+              <div class="dash-info"><span class="dash-name">Fatimah A.</span> <span class="dash-meta">SSS 1B · Chemistry · <b>61</b></span></div>
+              <span class="dash-grade gc">C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="float-badge bottom-left">
+      <div class="fb-icon o"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg></div>
+      <div>
+        <div class="fb-title">Transcript Generated</div>
+        <div class="fb-sub">Adaeze Obi · SSS 3A</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">Core Features</div>
+  <h2 class="section-title">Everything Your School Needs<br>for Academic Excellence</h2>
+  <p class="section-sub">From daily score entry to end-of-term report cards, EduTrack covers every step of the academic records process.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <div class="feature-title">Smart Score Entry</div>
+      <p class="feature-desc">Enter Tests, Assignments, Quizzes, Debates, Projects, Affective Domain, and Exam scores in one structured grid. CA totals and grades are calculated automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+      <div class="feature-title">Report Cards</div>
+      <p class="feature-desc">Generate official, print-ready student report cards per term. Each card includes all subject scores, grades, remarks, and class position.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg></div>
+      <div class="feature-title">Broadsheet View</div>
+      <p class="feature-desc">View all students × all subjects on one comprehensive sheet. Filter by class and term, then print with a single click.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg></div>
+      <div class="feature-title">Official Transcripts</div>
+      <p class="feature-desc">Generate detailed academic transcripts for current students and alumni — printable and complete with full subject histories.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
+      <div class="feature-title">Alumni Records</div>
+      <p class="feature-desc">Permanently store records for graduated students. Add historical scores and generate transcripts years after graduation.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      <div class="feature-title">Student Promotion</div>
+      <p class="feature-desc">Promote entire classes to the next level at the start of each session in one action. Handles JSS and SSS progression automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></div>
+      <div class="feature-title">Teacher Management</div>
+      <p class="feature-desc">Register teachers with departments, form classes, and subjects. Each teacher gets secure Firebase login credentials.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <div class="feature-title">Subject Allocation</div>
+      <p class="feature-desc">Assign subjects by class type — Science, Art, Commercial streams. Manage exactly which subjects appear for each class level.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <div class="feature-title">Firebase Authentication</div>
+      <p class="feature-desc">Enterprise-grade Google Firebase security. Role-based access for Admins, Teachers, and Students — with password reset built in.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="roles-section" id="roles">
+  <div class="section-label">Who It's For</div>
+  <h2 class="section-title">Three Roles, One Seamless System</h2>
+  <p class="section-sub">EduTrack is designed for every stakeholder in your school's academic process — from the admin office to the classroom.</p>
+
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-emoji" style="width:56px;height:56px;border-radius:16px;background:rgba(15,122,90,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:28px;height:28px;color:var(--emerald);stroke-width:1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="role-title">Administrator</div>
+      <p class="role-desc">Full control over every aspect of the school's academic data and staff.</p>
+      <ul class="role-perks">
+        <li>Add, edit & promote students</li>
+        <li>Register & manage teachers</li>
+        <li>View all scores across all classes</li>
+        <li>Generate broadsheets & transcripts</li>
+        <li>Manage alumni records</li>
+        <li>Customize school settings & branding</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-emoji" style="width:56px;height:56px;border-radius:16px;background:rgba(15,122,90,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:28px;height:28px;color:var(--emerald);stroke-width:1.75"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></div>
+      <div class="role-title">Teacher</div>
+      <p class="role-desc">Teachers enter and manage scores for the specific subjects they teach.</p>
+      <ul class="role-perks">
+        <li>Secure personal login credentials</li>
+        <li>Enter CA scores per subject & class</li>
+        <li>Record Tests, Assignments & Quizzes</li>
+        <li>Affective domain & project scoring</li>
+        <li>Print CA sheets for physical records</li>
+        <li>Save all student scores at once</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-emoji" style="width:56px;height:56px;border-radius:16px;background:rgba(15,122,90,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:28px;height:28px;color:var(--emerald);stroke-width:1.75"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div class="role-title">Student</div>
+      <p class="role-desc">Students can view their own academic performance and result history.</p>
+      <ul class="role-perks">
+        <li>View personal result records</li>
+        <li>See scores by subject and term</li>
+        <li>Access academic performance history</li>
+        <li>Download and print report cards</li>
+        <li>Secure, read-only access</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="showcase-section" id="showcase">
+  <div class="showcase-row">
+    <div class="score-mockup">
+      <div class="score-header">
+        <div>
+          <div class="score-header-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Score Entry — SSS 2A · Mathematics</div>
+          <div class="score-header-meta">First Term · 2024/2025 Session</div>
+        </div>
+        <div style="font-size:11px;color:var(--emerald);font-weight:600;display:flex;align-items:center;gap:4px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:12px;height:12px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save All Scores</div>
+      </div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th class="name-col">Student</th>
+            <th>T1/5</th><th>T2/5</th><th>A1/5</th><th>Qz/5</th><th>Proj/10</th><th>Exam/40</th><th>Total</th><th>Grd</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name-col">Chinyere Okafor</td>
+            <td><div class="score-input">5</div></td><td><div class="score-input">4</div></td>
+            <td><div class="score-input">5</div></td><td><div class="score-input">4</div></td>
+            <td><div class="score-input">9</div></td><td><div class="score-input">38</div></td>
+            <td style="font-weight:700;color:var(--emerald)">84</td>
+            <td><span class="grade-badge grade-a">A</span></td>
+          </tr>
+          <tr>
+            <td class="name-col">Emeka Nwosu</td>
+            <td><div class="score-input">4</div></td><td><div class="score-input">3</div></td>
+            <td><div class="score-input">4</div></td><td><div class="score-input">3</div></td>
+            <td><div class="score-input">7</div></td><td><div class="score-input">32</div></td>
+            <td style="font-weight:700;color:#b07900">72</td>
+            <td><span class="grade-badge grade-b">B</span></td>
+          </tr>
+          <tr>
+            <td class="name-col">Fatimah Aliyu</td>
+            <td><div class="score-input">3</div></td><td><div class="score-input">3</div></td>
+            <td><div class="score-input">3</div></td><td><div class="score-input">3</div></td>
+            <td><div class="score-input">6</div></td><td><div class="score-input">28</div></td>
+            <td style="font-weight:700;color:#4444aa">61</td>
+            <td><span class="grade-badge grade-c">C</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="showcase-text">
+      <div class="section-label">Score Entry</div>
+      <h3>Full Nigerian CA Structure, One Screen</h3>
+      <p>EduTrack's score entry is built around Nigeria's full continuous assessment model — Tests, Assignments, Quizzes, Debates, Projects, Affective Domain, and Exams. Everything in one grid per subject and class.</p>
+      <ul class="showcase-bullets">
+        <li><div class="bcheck">✓</div> Select class then subject to load all students at once</li>
+        <li><div class="bcheck">✓</div> CA and total scores calculated automatically in real time</li>
+        <li><div class="bcheck">✓</div> Grades and remarks assigned based on your grading scale</li>
+        <li><div class="bcheck">✓</div> Print CA sheets or save directly to the cloud database</li>
+        <li><div class="bcheck">✓</div> Edit any individual score anytime from saved records</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="showcase-row flip">
+    <div class="showcase-text">
+      <div class="section-label">Report Cards & Broadsheets</div>
+      <h3>Official Documents, Ready to Print</h3>
+      <p>Generate beautifully formatted, branded report cards for every student each term. View and print the full class broadsheet showing all students and subjects side by side.</p>
+      <ul class="showcase-bullets">
+        <li><div class="bcheck">✓</div> Report cards show all subjects, scores, grades & remarks</li>
+        <li><div class="bcheck">✓</div> Student position within class calculated automatically</li>
+        <li><div class="bcheck">✓</div> Broadsheet covers all students × all subjects per class</li>
+        <li><div class="bcheck">✓</div> Filter by class and term — print with one click</li>
+        <li><div class="bcheck">✓</div> School name, motto & principal customizable in Settings</li>
+      </ul>
+    </div>
+
+    <div class="report-mockup">
+      <div class="report-top">
+        <div class="report-school">Redeemed Christian School & Academy</div>
+        <div class="report-sub-text">Excellence · Integrity · Faith</div>
+        <div class="report-card-title">STUDENT REPORT CARD · TERM 2</div>
+      </div>
+      <div class="report-body">
+        <div class="report-info">
+          <div><div class="ri-label">Student Name</div><div class="ri-val">Chinyere Okafor</div></div>
+          <div><div class="ri-label">Class</div><div class="ri-val">SSS 2A (Science)</div></div>
+          <div><div class="ri-label">Session</div><div class="ri-val">2024/2025</div></div>
+          <div><div class="ri-label">Position</div><div class="ri-val">3rd of 32</div></div>
+        </div>
+        <table class="report-subjects">
+          <thead><tr><th class="subj-name">Subject</th><th>CA/60</th><th>Exam/40</th><th>Total</th><th>Grade</th></tr></thead>
+          <tbody>
+            <tr><td class="subj-name">Mathematics</td><td>48</td><td>36</td><td>84</td><td><span class="grade-badge grade-a">A</span></td></tr>
+            <tr><td class="subj-name">English Lang.</td><td>44</td><td>32</td><td>76</td><td><span class="grade-badge grade-b">B</span></td></tr>
+            <tr><td class="subj-name">Physics</td><td>50</td><td>38</td><td>88</td><td><span class="grade-badge grade-a">A</span></td></tr>
+            <tr><td class="subj-name">Chemistry</td><td>42</td><td>30</td><td>72</td><td><span class="grade-badge grade-b">B</span></td></tr>
+            <tr class="report-total-row"><td class="subj-name" style="color:var(--ink)">Average</td><td colspan="3" style="text-align:right;color:var(--emerald)">80.0</td><td><span class="grade-badge grade-a">A</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-label">Getting Started</div>
+  <h2 class="section-title">Live in Minutes, Not Months</h2>
+  <p class="section-sub">EduTrack is designed to be set up quickly by any school administrator — no technical background required.</p>
+
+  <div class="steps-grid">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-title">Create School Account</div>
+      <p class="step-desc">Register as Admin and configure your school name, motto, address, and current session in Settings.</p>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-title">Add Students & Teachers</div>
+      <p class="step-desc">Register your students class by class, and create teacher accounts with subject and form class assignments.</p>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-title">Enter Scores Each Term</div>
+      <p class="step-desc">Teachers log in and fill scores per subject. CA totals, grades, and class positions are computed automatically.</p>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-title">Print & Share Results</div>
+      <p class="step-desc">Generate report cards, broadsheets, and transcripts at end of term — ready to share with parents and students.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="section-label">Simple Pricing</div>
+  <h2 class="section-title">Plans for Every School Size</h2>
+  <p class="section-sub">No hidden charges. Start free and scale as your school grows.</p>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price"><span class="currency">₦</span>20,000<span class="period">/term</span></div>
+      <div class="plan-desc">For small schools up to 200 students</div>
+      <ul class="plan-features">
+        <li><div class="check">✓</div> Up to 200 students</li>
+        <li><div class="check">✓</div> Full score entry (all CA components)</li>
+        <li><div class="check">✓</div> Report card generation</li>
+        <li><div class="check">✓</div> Broadsheet & transcripts</li>
+        <li><div class="check">✓</div> Up to 5 teacher accounts</li>
+        <li><div class="check">✓</div> Email support</li>
+      </ul>
+      <button class="btn-plan" onclick="window.open('https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20the%20EduTrack%20Starter%20plan.')">Get Started</button>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="plan-name">School</div>
+      <div class="plan-price"><span class="currency">₦</span>45,000<span class="period">/term</span></div>
+      <div class="plan-desc">For growing schools up to 800 students</div>
+      <ul class="plan-features">
+        <li><div class="check">✓</div> Up to 800 students</li>
+        <li><div class="check">✓</div> All Starter features</li>
+        <li><div class="check">✓</div> Alumni records management</li>
+        <li><div class="check">✓</div> Student promotion tools</li>
+        <li><div class="check">✓</div> Unlimited teacher accounts</li>
+        <li><div class="check">✓</div> Custom school branding</li>
+        <li><div class="check">✓</div> Priority support</li>
+      </ul>
+      <button class="btn-plan white" onclick="window.open('https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20the%20EduTrack%20School%20plan.')">Get Started</button>
+    </div>
+
+    <div class="pricing-card">
+      <div class="plan-name">Academy</div>
+      <div class="plan-price" style="font-size:30px;align-items:center;">Custom</div>
+      <div class="plan-desc">For large schools & multi-branch academies</div>
+      <ul class="plan-features">
+        <li><div class="check">✓</div> Unlimited students</li>
+        <li><div class="check">✓</div> All School features</li>
+        <li><div class="check">✓</div> Multi-branch support</li>
+        <li><div class="check">✓</div> Custom integrations</li>
+        <li><div class="check">✓</div> Dedicated account manager</li>
+        <li><div class="check">✓</div> On-site training & onboarding</li>
+      </ul>
+      <button class="btn-plan" onclick="window.open('https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20the%20EduTrack%20Academy%20plan%20for%20a%20large%20school.')">Contact Us</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- EVERY PLAN INCLUDES -->
+<section style="background:var(--cream);">
+  <div class="pricing-includes-bar" style="padding:0 6% 80px;">
+    <h4>Every plan includes:</h4>
+    <div class="includes-chips">
+      <div class="inc-chip">Score Entry</div>
+      <div class="inc-chip">Report Cards</div>
+      <div class="inc-chip">Broadsheet</div>
+      <div class="inc-chip">Transcripts</div>
+      <div class="inc-chip">Alumni Records</div>
+      <div class="inc-chip">Firebase Auth</div>
+      <div class="inc-chip">Mobile Access</div>
+      <div class="inc-chip">Cloud Sync</div>
+      <div class="inc-chip">Teacher Logins</div>
+      <div class="inc-chip">Student Portal</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="section-label">Frequently Asked Questions</div>
+  <h2 class="section-title">Got Questions? We&rsquo;ve Got Answers</h2>
+  <p class="section-sub">Everything you need to know before getting started with EduTrack.</p>
+
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How does EduTrack store school data — is it safe?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">All data is stored on Google Firebase — the same infrastructure used by major global apps. Access is protected by role-based Firebase Authentication, so only authorised admins, teachers, and students can log in and see their permitted data.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Can teachers enter scores from their mobile phones?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">Yes — 100%. EduTrack is fully mobile-first. Every feature, including score entry, works perfectly on any smartphone. Teachers do not need a laptop or computer to use the platform.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Can I use EduTrack for both JSS and SSS classes?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">Absolutely. EduTrack supports all 12+ class levels — from JSS 1 through SSS 3, including Science, Art and Commercial streams. Subject allocation is customizable per class type, so each stream sees only its relevant subjects.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">What happens if I enter a wrong score by mistake?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">No problem. Any saved score record can be edited individually from the Saved Score Records table. Admins and teachers can click the edit button on any record to update individual CA components or exam scores at any time.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">How many teachers can be registered on one account?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">The Starter plan supports up to 5 teacher accounts. The School plan supports unlimited teachers. Each teacher gets their own secure login and can only access score entry for their assigned subjects and classes.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Can I generate transcripts for already-graduated students?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">Yes. EduTrack has a dedicated Alumni Records module where you can store and retrieve records for graduated students indefinitely. Transcripts can be generated and printed at any time, even years after graduation.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Is there a free trial available?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">Yes — you can request a free trial by contacting us on WhatsApp. We'll set up a demo account for your school so you can explore all features before making any payment commitment.</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span class="faq-q-text">Does the school name and logo appear on report cards?</span><div class="faq-icon">+</div></div>
+      <div class="faq-a"><div class="faq-a-inner">Yes. In the Settings panel, the admin can configure the school name, motto, address and principal's name. All of this information appears on generated report cards, broadsheets and transcripts — giving every document a professional, branded appearance.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-label">Ready to Go Digital?</div>
+  <h2 class="section-title">Bring Your School's Records into the 21st Century</h2>
+  <p class="section-sub">Join schools already using EduTrack to manage results, generate reports, and empower teachers — all from one secure cloud platform.</p>
+  <div class="cta-btns">
+    <button class="btn-cta-primary" onclick="window.open('https://wa.me/2347070710406?text=Hi%2C%20I%27d%20like%20a%20free%20trial%20of%20EduTrack%20for%20my%20school.')">Start Free Trial →</button>
+    <button class="btn-cta-outline" onclick="window.open('https://rcsa-school-results.web.app/')">View the Live App</button>
+  </div>
+</section>
+
+<!-- WHATSAPP FAB -->
+<div class="wa-fab-wrap" id="waFabWrap">
+  <div class="wa-options" id="waOptions">
+    <a class="wa-option" href="https://wa.me/2347070710406?text=Hi%2C%20I%27m%20interested%20in%20EduTrack%20for%20my%20school." target="_blank" rel="noopener">
+      <div class="wa-opt-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div> Chat with Us
+    </a>
+    <a class="wa-option" href="https://wa.me/2347070710406?text=Hi%2C%20I%27d%20like%20a%20free%20trial%20of%20EduTrack." target="_blank" rel="noopener">
+      <div class="wa-opt-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div> Request Free Trial
+    </a>
+    <a class="wa-option" href="https://wa.me/2347070710406?text=Hi%2C%20I%20need%20support%20with%20EduTrack." target="_blank" rel="noopener">
+      <div class="wa-opt-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div> Get Support
+    </a>
+  </div>
+  <button class="wa-fab" id="waFab" onclick="toggleWa()" aria-label="Chat on WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:28px;height:28px;stroke-width:2;color:#fff;" id="waFabIcon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-mark">E</div>
+      <p>EduTrack is a secure, cloud-based academic records management platform built for Nigerian secondary schools.</p>
+      <div class="secured"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secured with Firebase Authentication</div>
+      <a class="author-badge" href="https://justice-portfolio-a005b.web.app/" target="_blank" rel="noopener" style="margin-top:14px;display:inline-flex;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:13px;height:13px;margin-right:4px;"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg> Built by <strong style="margin-left:4px;">Justice Sunday Etimbuk</strong></a>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#">Score Entry</a></li>
+        <li><a href="#">Report Cards</a></li>
+        <li><a href="#">Broadsheet</a></li>
+        <li><a href="#">Transcripts</a></li>
+        <li><a href="#">Alumni Records</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="https://wa.me/2347070710406?text=Hi%2C%20I%27d%20like%20to%20get%20in%20touch%20about%20EduTrack." target="_blank">Contact via WhatsApp</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help Centre</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="https://rcsa-school-results.web.app/" target="_blank">Log In to App</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 EduTrack. All rights reserved. Made with ♥ in Nigeria</span>
+    <a class="author-badge" href="https://justice-portfolio-a005b.web.app/" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;width:13px;height:13px;margin-right:4px;"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg> Built by <strong style="margin-left:4px;">Justice Sunday Etimbuk</strong></a>
+  </div>
+</footer>
+
+<script>
+// Mobile nav
+function openMobNav(){document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden';}
+function closeMobNav(){document.getElementById('mobNav').classList.remove('open');document.body.style.overflow='';}
+
+// WhatsApp FAB - toggle open/close with icon swap
+let waOpen=false;
+function toggleWa(){
+  waOpen=!waOpen;
+  document.getElementById('waOptions').classList.toggle('open',waOpen);
+  const fab=document.getElementById('waFab');
+  const icon=document.getElementById('waFabIcon');
+  fab.style.animation=waOpen?'none':'';
+  icon.innerHTML = waOpen ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' : '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>';
+}
+function closeWa(){
+  waOpen=false;
+  document.getElementById('waOptions').classList.remove('open');
+  const fab=document.getElementById('waFab');
+  const icon=document.getElementById('waFabIcon');
+  fab.style.animation='';
+  icon.innerHTML = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>';
+}
+// Close WA if clicked outside
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('waFabWrap');
+  if(wrap&&!wrap.contains(e.target))closeWa();
+});
+
+// FAQ accordion
+function toggleFaq(el){
+  const item=el.closest('.faq-item');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(i){i.classList.remove('open');});
+  if(!isOpen)item.classList.add('open');
+}
+
+// Escape key closes overlays
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){closeMobNav();closeWa();}
+});
+</script>
+</body>
+</html>
